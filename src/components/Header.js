@@ -23,11 +23,7 @@ const AddEvent = styled.button`
   cursor: pointer;
 `;
 
-const Header = () => {
-  const addEvent = () => {
-    window.prompt("Добавьте событие");
-  };
-
+const Header = ({ addEvent }) => {
   return (
     <HeaderCalendar>
       <Title>Календарь событий</Title>

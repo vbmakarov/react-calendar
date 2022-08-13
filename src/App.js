@@ -4,8 +4,15 @@ import Header from "./components/Header";
 import Calendar from "./components/Calendar";
 import Events from "./components/Events";
 import Footer from "./components/Footer";
-import { getDateArray, getMonth, getYear, getNowDate } from "./utils";
+import {
+  getDateArray,
+  getMonth,
+  getYear,
+  getNowDate,
+  checkDate,
+} from "./utils";
 import React, { useState } from "react";
+import store from "./store";
 
 const Wrapper = styled.div`
   height: 100vh;
@@ -22,43 +29,9 @@ const Container = styled.div`
   align-items: center;
 `;
 
-function App() {
+const App = () => {
   const week = ["ПН", "ВТ", "СР", "ЧТ", "ПТ", "СБ", "ВС"];
 
-  //Переделать на динамическое получение и хранение данных с помощью Redux или Mobx
-  const events = {
-    8: {},
-    9: {
-      "02.07.2022": "Поездка в театр!",
-    },
-    10: {},
-    11: {},
-    12: {},
-    13: {
-      "27.06.2022": "Сходить в магазин!",
-      "28.06.2022": "Встреча в ресторане!",
-      "29.06.2022": "Поездка в соседний город!",
-      "30.06.2022": "Выход на работу!",
-      "01.07.2022": "Обед!",
-      "02.07.2022": "Купить автомобиль!",
-      "03.07.2022": "Навестить родителей!",
-    },
-    14: {},
-    15: {},
-    16: {
-      "30.06.2022": "Сходить в спортзал!",
-    },
-    17: {},
-    18: {
-      "01.07.2022": "Погулять с собакой!",
-    },
-    19: {},
-    20: {},
-    21: {
-      "27.06.2022": "Поход в кино!",
-    },
-    22: {},
-  };
   const month = getMonth();
   const year = getYear();
   const nowDate = getNowDate();
@@ -75,15 +48,30 @@ function App() {
     });
   };
 
-  //Реализовать логику удаления событий
   const deleteEvent = (removeEvent) => {
     const result = window.confirm("Вы точно хотите удалить эту запись?");
-    result && console.log(removeEvent);
+    if (result) {
+      store.deleteEvent(removeEvent);
+    }
+  };
+  const addEvent = () => {
+    const data = window.prompt(
+      "Добавьте дату события в формате:\n ГГГГ-ММ-ДД ЧЧ:00:00"
+    );
+
+    const result = checkDate(data, daysOfWeek);
+    if (result) {
+      const event = window.prompt("Добавьте событие:");
+      if (event) {
+        store.addEvent(result, event);
+        alert("Событие добавлено!");
+      }
+    }
   };
   return (
     <Wrapper>
       <Container>
-        <Header />
+        <Header addEvent={addEvent} />
         <Calendar
           daysOfWeek={daysOfWeek}
           week={week}
@@ -95,7 +83,7 @@ function App() {
         />
         <Events
           daysOfWeek={daysOfWeek}
-          events={events}
+          events={store.fetchEvents()}
           setRemove={setRemove}
           removeEvent={removeEvent}
         />
@@ -108,6 +96,6 @@ function App() {
       </Container>
     </Wrapper>
   );
-}
+};
 
 export default App;

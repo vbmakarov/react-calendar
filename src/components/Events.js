@@ -1,4 +1,5 @@
 import styled, { css } from "styled-components";
+import { observer } from "mobx-react-lite";
 
 const EventsWrapper = styled.div`
   width: 100%;
@@ -6,12 +7,12 @@ const EventsWrapper = styled.div`
   scroll-behavior: smooth;
   &::-webkit-scrollbar {
     width: 5px;
-    background-color: #ebecff;
+    background-color: red;
   }
 
   &::-webkit-scrollbar-thumb {
     border-radius: 5px;
-    background-color: #ebecff;
+    background-color: red;
   }
 
   &::-webkit-scrollbar-track {
@@ -65,7 +66,7 @@ const Time = styled.div`
   top: -12px;
 `;
 
-const Events = ({ daysOfWeek, events, setRemove, removeEvent }) => {
+const Events = observer(({ daysOfWeek, events, setRemove, removeEvent }) => {
   const startTime = 8;
   const endTime = 22;
   const diff = endTime - startTime;
@@ -91,14 +92,20 @@ const Events = ({ daysOfWeek, events, setRemove, removeEvent }) => {
                   <EventCell key={index}>
                     {currentEvent && (
                       <Event
-                        onClick={() =>
+                        onClick={() => {
+                          if (currentEvent !== removeEvent) {
+                            alert(
+                              "Ваше событие сегодня:" +
+                                events[startTime + indexRow + 1][date]
+                            );
+                          }
                           setRemove((prev) => {
                             if (currentEvent === prev) {
                               return null;
                             }
                             return currentEvent;
-                          })
-                        }
+                          });
+                        }}
                         isDelete={currentEvent === removeEvent ? true : false}
                       ></Event>
                     )}
@@ -110,6 +117,6 @@ const Events = ({ daysOfWeek, events, setRemove, removeEvent }) => {
         })}
     </EventsWrapper>
   );
-};
+});
 
 export default Events;
